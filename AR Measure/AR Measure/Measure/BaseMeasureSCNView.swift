@@ -55,5 +55,4 @@ open class BaseMeasureSCNView: ARSCNView {
         let dz = point2.z - point1.z
         return CGFloat(sqrt(dx*dx + dy*dy + dz*dz))
     }
-    
 }
