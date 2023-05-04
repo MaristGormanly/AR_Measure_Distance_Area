@@ -34,7 +34,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NwL-hj-0Oo">
-                                <rect key="frame" x="40" y="303.66666666666663" width="313" height="230"/>
+                                <rect key="frame" x="40" y="303.66666666666669" width="313" height="230.00000000000006"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3pA-Ys-frL">
                                         <rect key="frame" x="91.666666666666657" y="15" width="130" height="35"/>
@@ -119,14 +119,14 @@
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </arscnView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zdu-rc-k8d">
-                                <rect key="frame" x="160.33333333333334" y="656.33333333333337" width="72.666666666666657" height="73.666666666666629"/>
+                                <rect key="frame" x="154" y="644.66666666666663" width="85.333333333333314" height="85.333333333333371"/>
                                 <state key="normal" image="add_point"/>
                                 <connections>
-                                    <action selector="addPoint:" destination="5ey-hc-550" eventType="touchUpInside" id="77n-ev-9G9"/>
+                                    <action selector="addNodePoint:" destination="5ey-hc-550" eventType="touchUpInside" id="ncI-zN-twd"/>
                                 </connections>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Oval" translatesAutoresizingMaskIntoConstraints="NO" id="CxY-iN-tFF">
-                                <rect key="frame" x="190.66666666666666" y="420" width="12" height="12"/>
+                                <rect key="frame" x="191.33333333333334" y="420.66666666666669" width="10.666666666666657" height="10.666666666666686"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yQF-Ri-y1h">
                                 <rect key="frame" x="0.0" y="750" width="393" height="50"/>
@@ -271,7 +271,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </arscnView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Oval" translatesAutoresizingMaskIntoConstraints="NO" id="01t-b1-pkW">
-                                <rect key="frame" x="190.66666666666666" y="420" width="12" height="12"/>
+                                <rect key="frame" x="191.33333333333334" y="420.66666666666669" width="10.666666666666657" height="10.666666666666686"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="R4Q-8M-UnN">
                                 <rect key="frame" x="0.0" y="766" width="393" height="50"/>
@@ -326,10 +326,10 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MLd-MX-v2s">
-                                <rect key="frame" x="290.33333333333331" y="389.33333333333331" width="72.666666666666686" height="73.666666666666686"/>
+                                <rect key="frame" x="277.66666666666669" y="383.33333333333331" width="85.333333333333314" height="85.333333333333314"/>
                                 <state key="normal" image="add_point"/>
                                 <connections>
-                                    <action selector="addPoint:" destination="nCw-TO-IEg" eventType="touchUpInside" id="5zp-MN-KfF"/>
+                                    <action selector="addNodePoint:" destination="nCw-TO-IEg" eventType="touchUpInside" id="WzC-PG-HJT"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -472,8 +472,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Oval" width="12" height="12"/>
-        <image name="add_point" width="72.666664123535156" height="73.666664123535156"/>
+        <image name="Oval" width="10.666666984558105" height="10.666666984558105"/>
+        <image name="add_point" width="85.333335876464844" height="85.333335876464844"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

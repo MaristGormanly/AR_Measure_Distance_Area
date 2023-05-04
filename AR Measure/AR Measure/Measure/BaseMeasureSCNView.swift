@@ -19,7 +19,7 @@ open class BaseMeasureSCNView: ARSCNView {
         setUp()
     }
     
-    //MARK: - Private helper methods
+    //MARK: - Helper functions
     
     private func setUp() {
         let scene = SCNScene()
@@ -39,7 +39,7 @@ open class BaseMeasureSCNView: ARSCNView {
         }
     }
     
-    //MARK: - Public helper methods
+    //MARK: - Helper functions
     
     func run() {
         self.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])

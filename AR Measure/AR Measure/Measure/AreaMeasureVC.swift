@@ -1,5 +1,5 @@
 //
-//  AreaViewController.swift
+//  AreaMeasureVC.swift
 //  AR Measure
 //
 //  Created by banu, pitta on 24/04/23.
@@ -12,8 +12,8 @@ import ARKit
 class AreaMeasureVC: BaseMeasureVC {
 
     enum MeasureState {
-        case lengthCalc
-        case breadthCalc
+        case lengthCal
+        case breadthCal
     }
     
     struct FloorRect {
@@ -30,11 +30,11 @@ class AreaMeasureVC: BaseMeasureVC {
     var lengthNodes = NSMutableArray()
     var breadthNodes = NSMutableArray()
     var lineNodes = NSMutableArray()
-    var currentState: MeasureState = MeasureState.lengthCalc
+    var currentState: MeasureState = MeasureState.lengthCal
     var measureMultiplier: CGFloat = 0
     var measureReadingType: String = ""
     
-    var allPointNodes: [Any] {
+    var allNodePoints: [Any] {
         get {
             return lengthNodes as! [Any] + breadthNodes
         }
@@ -58,8 +58,8 @@ class AreaMeasureVC: BaseMeasureVC {
         self.navigationItem.rightBarButtonItems = [button1, button2]
         
         sceneView.delegate = self
-        lengthLabel.textColor = nodeColor(forState: .lengthCalc, alphaComponent: 1)
-        breadthLabel.textColor = nodeColor(forState: .breadthCalc, alphaComponent: 1)
+        lengthLabel.textColor = nodeColor(forState: .lengthCal, alphaComponent: 1)
+        breadthLabel.textColor = nodeColor(forState: .breadthCal, alphaComponent: 1)
         if UserDefaults.standard.measureType == .centimeters {
             measureMultiplier = 100
             measureReadingType = "cm"
@@ -72,13 +72,13 @@ class AreaMeasureVC: BaseMeasureVC {
         }
     }
     
-    //MARK: - Private helper methods
+    //MARK: - Helper functions
 
     private func nodeColor(forState state: MeasureState, alphaComponent: CGFloat) -> UIColor {
         switch state {
-        case .lengthCalc:
+        case .lengthCal:
             return UIColor.red.withAlphaComponent(alphaComponent)
-        case .breadthCalc:
+        case .breadthCal:
             return UIColor.green.withAlphaComponent(alphaComponent)
         }
     }
@@ -86,16 +86,16 @@ class AreaMeasureVC: BaseMeasureVC {
 
     private func nodesList(forState state: MeasureState) -> NSMutableArray {
         switch state {
-        case .lengthCalc:
+        case .lengthCal:
             return lengthNodes
-        case .breadthCalc:
+        case .breadthCal:
             return breadthNodes
         }
     }
     
     func clearScene() {
-        removeNodes(fromNodeList: nodesList(forState: .lengthCalc))
-        removeNodes(fromNodeList: nodesList(forState: .breadthCalc))
+        removeNodes(fromNodeList: nodesList(forState: .lengthCal))
+        removeNodes(fromNodeList: nodesList(forState: .breadthCal))
         removeNodes(fromNodeList: lineNodes)
     }
     
@@ -104,7 +104,7 @@ class AreaMeasureVC: BaseMeasureVC {
         realTimeLineNode?.removeFromParentNode()
         realTimeLineNode = nil
         floorRect = FloorRect(length: 0, breadth: 0)
-        currentState = .lengthCalc
+        currentState = .lengthCal
         lengthLabel.text = "--"
         breadthLabel.text = "--"
         areaLabel.text = "--"
@@ -112,11 +112,11 @@ class AreaMeasureVC: BaseMeasureVC {
     
     
     @objc func undoNodesAction() {
-        if allPointNodes.count > 0 {
+        if allNodePoints.count > 0 {
             realTimeLineNode?.removeFromParentNode()
             realTimeLineNode = nil
             if breadthNodes.count > 0 {
-                removeNodes(fromNodeList: nodesList(forState: .breadthCalc))
+                removeNodes(fromNodeList: nodesList(forState: .breadthCal))
                 breadthLabel.text = "--"
                 if lineNodes.count == 2 {
                     lineNodes.removeLastObject()
@@ -130,20 +130,19 @@ class AreaMeasureVC: BaseMeasureVC {
     
     //MARK: - IBActions
     
-    @IBAction func addPoint(_ sender: UIButton) {
+    @IBAction func addNodePoint(_ sender: UIButton) {
         
         let pointLocation = view.convert(screenCenterPoint, to: sceneView)
         guard let hitResultPosition = sceneView.hitResult(forPoint: pointLocation)  else {
             return
         }
         
-        //To prevent multiple taps
         sender.isUserInteractionEnabled = false
         defer {
             sender.isUserInteractionEnabled = true
         }
         
-        if currentState == .breadthCalc && allPointNodes.count == 2 {
+        if currentState == .breadthCal && allNodePoints.count == 2 {
             let startNode = lengthNodes[0] as! SCNNode
             let endNode = lengthNodes[1]  as! SCNNode
             let hitresultStartPoint = Int("\(hitResultPosition.x)".split(separator: ".").first ?? "") ?? 0
@@ -155,7 +154,7 @@ class AreaMeasureVC: BaseMeasureVC {
             }
         }
         
-        if allPointNodes.count >= 4 {
+        if allNodePoints.count >= 4 {
             resetMeasurement()
         }
         let nodes = nodesList(forState: currentState)
@@ -165,17 +164,15 @@ class AreaMeasureVC: BaseMeasureVC {
         node.position = hitResultPosition
         sceneView.scene.rootNode.addChildNode(node)
         
-        // Add the Sphere to the list.
+        
         nodes.add(node)
         
         if nodes.count == 1 {
-            
-            //Add a realtime line
             let realTimeLine = LineNode(from: hitResultPosition,
                                         to: hitResultPosition,
                                         lineColor: nodeColor,
                                         lineWidth: lineWidth)
-            realTimeLine.name = realTimeLineName
+            realTimeLine.name = measureRealTimeLine
             realTimeLineNode = realTimeLine
             sceneView.scene.rootNode.addChildNode(realTimeLine)
             
@@ -183,7 +180,6 @@ class AreaMeasureVC: BaseMeasureVC {
             let startNode = nodes[0] as! SCNNode
             let endNode = nodes[1]  as! SCNNode
             
-            // Create a node line between the nodes
             let measureLine = LineNode(from: startNode.position,
                                        to: endNode.position,
                                        lineColor: nodeColor,
@@ -191,20 +187,17 @@ class AreaMeasureVC: BaseMeasureVC {
             sceneView.scene.rootNode.addChildNode(measureLine)
             lineNodes.add(measureLine)
             
-            //calc distance
             let distance = sceneView.distance(betweenPoints: startNode.position, point2: endNode.position) * measureMultiplier
             
-            //Remove realtime line node
             realTimeLineNode?.removeFromParentNode()
             realTimeLineNode = nil
             
-            //Change state
             switch currentState {
-            case .lengthCalc:
+            case .lengthCal:
                 floorRect.length = distance
-                currentState = .breadthCalc
+                currentState = .breadthCal
                 lengthLabel.text = String(format: "%.2f\(measureReadingType)", distance)
-            case .breadthCalc:
+            case .breadthCal:
                 floorRect.breadth = distance
                 breadthLabel.text = String(format: "%.2f\(measureReadingType)", distance)
                 areaLabel.text = String(format: "%.2f\(measureReadingType)", floorRect.area)
@@ -212,7 +205,7 @@ class AreaMeasureVC: BaseMeasureVC {
         }
     }
     
-    // MARK: - helper functions
+    // MARK: - Helper functions
     
     func displayAlertWith(title: String, message: String, useAction: Bool = false) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -226,19 +219,18 @@ class AreaMeasureVC: BaseMeasureVC {
 extension AreaMeasureVC: ARSCNViewDelegate {
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        let dotNodes = allPointNodes as! [SCNNode]
+        let dotNodes = allNodePoints as! [SCNNode]
         if dotNodes.count > 0, let currentCameraPosition = self.sceneView.pointOfView {
             updateScaleFromCameraForNodes(dotNodes, fromPointOfView: currentCameraPosition)
         }
         
-        //Update realtime line node
         if let realTimeLineNode = self.realTimeLineNode,
             let hitResultPosition = sceneView.hitResult(forPoint: screenCenterPoint),
             let startNode = self.nodesList(forState: self.currentState).firstObject as? SCNNode {
             realTimeLineNode.updateNode(vectorA: startNode.position, vectorB: hitResultPosition, color: nil)
             
             let distance = sceneView.distance(betweenPoints: startNode.position, point2: hitResultPosition) * measureMultiplier
-            let label = currentState == .lengthCalc ? lengthLabel : breadthLabel
+            let label = currentState == .lengthCal ? lengthLabel : breadthLabel
             DispatchQueue.main.async { [unowned self] in
                 label?.text = String(format: "%.2f\(measureReadingType)", distance)
                 label?.textColor = self.nodeColor

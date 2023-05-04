@@ -13,7 +13,7 @@ class BaseMeasureVC: UIViewController {
 
     let lineWidth = CGFloat(0.003)
     let nodeRadius = CGFloat(0.015)
-    let realTimeLineName = "realTimeLine"
+    let measureRealTimeLine = "measureRealTimeLine"
 
     var realTimeLineNode: LineNode?
     
@@ -53,16 +53,16 @@ class BaseMeasureVC: UIViewController {
         
         nodes.forEach { (node) in
             
-            //1. Get The Current Position Of The Node
+            // Get The Current Position Of The Node
             let positionOfNode = SCNVector3ToGLKVector3(node.worldPosition)
             
-            //2. Get The Current Position Of The Camera
+            // Get The Current Position Of The Camera
             let positionOfCamera = SCNVector3ToGLKVector3(pointOfView.worldPosition)
             
-            //3. Calculate The Distance From The Node To The Camera
+            // Calculate The Distance From The Node To The Camera
             let distanceBetweenNodeAndCamera = GLKVector3Distance(positionOfNode, positionOfCamera)
             
-            //4. Animate Their Scaling & Set Their Scale Based On Their Distance From The Camera
+            // Animate Scaling & Set Scale Based On node Distance From The Camera
             SCNTransaction.begin()
             SCNTransaction.animationDuration = 0.5
             switch distanceBetweenNodeAndCamera {
