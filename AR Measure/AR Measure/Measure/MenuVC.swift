@@ -14,6 +14,7 @@ class MenuVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Menu"
     }
     
     // MARK: - user actions

@@ -52,6 +52,11 @@ class AreaMeasureVC: BaseMeasureVC {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Measure Area"
+        let button1 = UIBarButtonItem(image: UIImage(named: "reset"), style: .plain, target: self, action: #selector(resetMeasurement))
+        let button2 = UIBarButtonItem(image: UIImage(named: "undo"), style: .plain, target: self, action: #selector(undoNodesAction))
+        self.navigationItem.rightBarButtonItems = [button1, button2]
+        
         sceneView.delegate = self
         lengthLabel.textColor = nodeColor(forState: .lengthCalc, alphaComponent: 1)
         breadthLabel.textColor = nodeColor(forState: .breadthCalc, alphaComponent: 1)
@@ -94,13 +99,32 @@ class AreaMeasureVC: BaseMeasureVC {
         removeNodes(fromNodeList: lineNodes)
     }
     
-    private func resetMeasurement() {
+    @objc private func resetMeasurement() {
         clearScene()
+        realTimeLineNode?.removeFromParentNode()
+        realTimeLineNode = nil
         floorRect = FloorRect(length: 0, breadth: 0)
         currentState = .lengthCalc
         lengthLabel.text = "--"
         breadthLabel.text = "--"
         areaLabel.text = "--"
+    }
+    
+    
+    @objc func undoNodesAction() {
+        if allPointNodes.count > 0 {
+            realTimeLineNode?.removeFromParentNode()
+            realTimeLineNode = nil
+            if breadthNodes.count > 0 {
+                removeNodes(fromNodeList: nodesList(forState: .breadthCalc))
+                breadthLabel.text = "--"
+                if lineNodes.count == 2 {
+                    lineNodes.removeLastObject()
+                }
+            } else if lengthNodes.count > 0 {
+               resetMeasurement()
+            }
+        }
     }
     
     
@@ -117,6 +141,18 @@ class AreaMeasureVC: BaseMeasureVC {
         sender.isUserInteractionEnabled = false
         defer {
             sender.isUserInteractionEnabled = true
+        }
+        
+        if currentState == .breadthCalc && allPointNodes.count == 2 {
+            let startNode = lengthNodes[0] as! SCNNode
+            let endNode = lengthNodes[1]  as! SCNNode
+            let hitresultStartPoint = Int("\(hitResultPosition.x)".split(separator: ".").first ?? "") ?? 0
+            let startNodePositionX = Int("\(startNode.position.x)".split(separator: ".").first ?? "") ?? 0
+            let endNodePositionX = Int("\(endNode.position.x)".split(separator: ".").first ?? "") ?? 0
+            if hitresultStartPoint != startNodePositionX && hitresultStartPoint != endNodePositionX {
+                displayAlertWith(title: "Position Mismatch", message: "Please keep breadth start point at length start or end point")
+                return
+            }
         }
         
         if allPointNodes.count >= 4 {
@@ -174,6 +210,15 @@ class AreaMeasureVC: BaseMeasureVC {
                 areaLabel.text = String(format: "%.2f\(measureReadingType)", floorRect.area)
             }
         }
+    }
+    
+    // MARK: - helper functions
+    
+    func displayAlertWith(title: String, message: String, useAction: Bool = false) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let dismiss = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alert.addAction(dismiss)
+        self.present(alert, animated: true, completion: nil)
     }
     
 }

@@ -33,6 +33,10 @@ class DistanceMeasureVC: BaseMeasureVC {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Measure Distance"
+        let button1 = UIBarButtonItem(image: UIImage(named: "reset"), style: .plain, target: self, action: #selector(resetMeasurement))
+        self.navigationItem.rightBarButtonItem = button1
+        
         sceneView.delegate = self
         if UserDefaults.standard.measureType == .centimeters {
             measureMultiplier = 100
@@ -53,9 +57,11 @@ class DistanceMeasureVC: BaseMeasureVC {
         removeNodes(fromNodeList: lineNodes)
     }
     
-    private func resetMeasurement() {
+    @objc private func resetMeasurement() {
         clearScene()
         distance = 0
+        realTimeLineNode?.removeFromParentNode()
+        realTimeLineNode = nil
     }
     
     
