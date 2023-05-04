@@ -1,5 +1,5 @@
 //
-//  DistanceMeasureViewController.swift
+//  DistanceMeasureVC.swift
 //  AR Measure
 //
 //  Created by banu, pitta on 24/04/23.
@@ -50,7 +50,7 @@ class DistanceMeasureVC: BaseMeasureVC {
         }
     }
     
-    //MARK: - Private helper methods
+    //MARK: - Helper functions
     
     func clearScene() {
         removeNodes(fromNodeList: distanceNodes)
@@ -67,14 +67,13 @@ class DistanceMeasureVC: BaseMeasureVC {
     
     //MARK: - IBActions
     
-    @IBAction func addPoint(_ sender: UIButton) {
+    @IBAction func addNodePoint(_ sender: UIButton) {
         
         let pointLocation = view.convert(screenCenterPoint, to: sceneView)
         guard let hitResultPosition = sceneView.hitResult(forPoint: pointLocation)  else {
             return
         }
         
-        //To prevent multiple taps
         sender.isUserInteractionEnabled = false
         defer {
             sender.isUserInteractionEnabled = true
@@ -89,18 +88,14 @@ class DistanceMeasureVC: BaseMeasureVC {
         let node = SCNNode(geometry: sphere)
         node.position = hitResultPosition
         sceneView.scene.rootNode.addChildNode(node)
-    
-        // Add the Sphere to the list.
+
         nodes.add(node)
-        
         if nodes.count == 1 {
-            
-            //Add a realtime line
             let realTimeLine = LineNode(from: hitResultPosition,
                                         to: hitResultPosition,
                                         lineColor: nodeColor,
                                         lineWidth: lineWidth)
-            realTimeLine.name = realTimeLineName
+            realTimeLine.name = measureRealTimeLine
             realTimeLineNode = realTimeLine
             sceneView.scene.rootNode.addChildNode(realTimeLine)
             
@@ -108,15 +103,13 @@ class DistanceMeasureVC: BaseMeasureVC {
             let startNode = nodes[0] as! SCNNode
             let endNode = nodes[1]  as! SCNNode
             
-            // Create a node line between the nodes
             let measureLine = LineNode(from: startNode.position,
                                        to: endNode.position,
                                        lineColor: nodeColor,
                                        lineWidth: lineWidth)
             sceneView.scene.rootNode.addChildNode(measureLine)
             lineNodes.add(measureLine)
-            
-            //Remove realtime line node
+        
             realTimeLineNode?.removeFromParentNode()
             realTimeLineNode = nil
             
@@ -136,7 +129,6 @@ extension DistanceMeasureVC: ARSCNViewDelegate {
             updateScaleFromCameraForNodes(dotNodes, fromPointOfView: currentCameraPosition)
         }
         
-        //Update realtime line node
         if let realTimeLineNode = self.realTimeLineNode,
             let hitResultPosition = sceneView.hitResult(forPoint: screenCenterPoint),
             let startNode = distanceNodes.firstObject as? SCNNode {
